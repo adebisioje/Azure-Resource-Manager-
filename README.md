@@ -1,3 +1,4 @@
+
 # Azure-Resource-Manager
 These files help you understand how to deploy simple ARM templates using powershell
 
@@ -5,3 +6,5 @@ These files help you understand how to deploy simple ARM templates using powersh
 * Deploy-SimpleIaas.ps1 - Walks you through how to deploy IaaS using powerhsell into Azure
 * Deploy-SimplePaas.ps1 - Walks you through how to deploy PaaS using powerhsell into Azure 
 * Deploy-SimplePaasTemplate.ps1 - Walks you through deploying the simplePaasARMTemplate.json into Azure 
+* Deploy-SimpleIaasTemplate.ps1 - Walks you through deploying the simpleIaasARMTemplate.json into Azure 
+
