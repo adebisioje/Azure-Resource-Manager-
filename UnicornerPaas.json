@@ -1,0 +1,89 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "webAppNamePrefix": {
+          "type": "string",
+        "minLength": 1,
+        "defaultValue": "unicorner"
+      },
+      "farmSKU": {
+          "type": "string",
+          "allowedValues": [
+              "Free",
+              "Shared",
+              "Basic",
+              "Standard"
+          ],
+          "defaultValue": "Standard"
+      },
+    "farmWorkerSize": {
+      "type": "string",
+      "allowedValues": [
+        "0",
+        "1",
+        "2"
+      ],
+      "defaultValue": "1"
+    },
+    "webAppCount": {
+      "type": "int",
+      "defaultValue": 4,
+      "minValue": 1
+    },
+    "webAppLocations": {
+      "type": "array", 
+      "defaultValue": ["North Central US", "West US", "East US", "Central US"]
+
+    }
+
+  },
+  "variables": {
+      "siteName": "[concat('site', uniqueString(resourceGroup().id))]"
+
+  },
+  "resources": [
+    {
+      "name": "[concat(parameters('webAppNamePrefix'), '-farm-',copyIndex())]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[parameters('webAppLocations')[copyIndex()]]",
+      "apiVersion": "2014-06-01",
+      "copy": {
+        "count": "[length(parameters('webAppLocations'))]",
+        "name": "farmCopy"
+
+      },
+      "dependsOn": [ ],
+      "tags": {
+        "displayName": "[concat(parameters('webAppNamePrefix'), '-farm-',copyIndex())]"
+      },
+      "properties": {
+        "name": "[concat(parameters('webAppNamePrefix'), '-farm-',copyIndex())]",
+        "sku": "[parameters('farmSKU')]",
+        "workerSize": "[parameters('farmWorkerSize')]",
+        "numberOfWorkers": 1
+      }
+    },
+      {
+          "name": "[variables('siteName')]",
+          "type": "Microsoft.Web/sites",
+          "location": "[parameters('webAppLocations')[copyIndex()]]",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+              "[concat('Microsoft.Web/serverfarms/', concat(parameters('webAppNamePrefix'), '-farm-',0))]"
+          ],
+          "tags": {
+              "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', concat(parameters('webAppNamePrefix'), '-farm-',0))]": "Resource",
+              "displayName": "site"
+          },
+          "properties": {
+              "name": "[variables('siteName')]",
+              "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', concat(parameters('webAppNamePrefix'), '-farm-',0))]"
+          }
+      }
+
+  ],
+  "outputs": {
+
+  }
+}
